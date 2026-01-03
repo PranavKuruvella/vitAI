@@ -29,13 +29,16 @@ const ResumeBuilder = () => {
     public: false,
   });
 
-  const loadExistingResume = async () => { //db fetch to get the resume details if present
-    const resume = dummyResumeData.find((resume) => resume._id === resumeId);
-    if (resume) {
-      setResumeData(resume);
-      document.title = resume.title;
-    }
-  };
+  useEffect(() => { //page load avvagane edhi chey
+    const loadExistingResume = async () => { //db fetch to get the resume details if present
+      const resume = dummyResumeData.find((resume) => resume._id === resumeId);
+      if (resume) {
+        setResumeData(resume);
+        document.title = resume.title;
+      }
+    };
+    loadExistingResume();
+  }, [resumeId]);
 
   const [activeSectionIndex, setActiveSectionIndex] = useState(0) //progress bar kosam
   const [remove, setRemove] = useState(false)
@@ -52,31 +55,27 @@ const ResumeBuilder = () => {
 
   const activeSection = sections[activeSectionIndex]
 
-  useEffect(() => { //page load avvagane edhi chey
-    loadExistingResume();
-  }, []);
 
-
-  const changeResumeVisibility = ()=>{ //toggle public/private
-    setResumeData(prev=>({...prev, public: !prev.public}))
+  const changeResumeVisibility = () => { //toggle public/private
+    setResumeData(prev => ({ ...prev, public: !prev.public }))
   }
 
-  const handleShare = ()=>{
+  const handleShare = () => {
     const frontendUrl = window.location.href.split("/app/")[0];
     const resumeUrl = `${frontendUrl}/view/${resumeData._id}`;
 
-    if(navigator.share){
+    if (navigator.share) {
       navigator.share({
         title: resumeData.title,
         text: "Check out my resume!",
         url: resumeUrl,
       })
-    }else{
+    } else {
       alert(" Currently Share not Supported")
     }
   }
 
-  const downloadResume = ()=>{
+  const downloadResume = () => {
     window.print();
   }
 
@@ -215,19 +214,19 @@ const ResumeBuilder = () => {
                 <button onClick={downloadResume} className="flex items-center p-2 px-6 gap-2 text-xs bg-linear-to-br from-indigo-100 to-indigo-200 text-indigo-600 ring-indigo-300 rounded-lg hover:ring transition-colors">
                   <Download className="size-4" /> Download
                 </button>
+              </div>
+
             </div>
+            {/* resume preview */}
+            <ResumePreview
+              data={resumeData}
+              template={resumeData.template}
+              accentColor={resumeData.accent_color}
+            />
 
           </div>
-          {/* resume preview */}
-          <ResumePreview
-            data={resumeData}
-            template={resumeData.template}
-            accentColor={resumeData.accent_color}
-          />
-
         </div>
       </div>
-    </div>
     </div >
   );
 };

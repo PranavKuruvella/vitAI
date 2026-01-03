@@ -50,7 +50,7 @@ const PersonalInfoForm = ({ data, onChange, removeBackground, setRemoveBackgroun
               <div className='flex flex-col gap-2'>
                 <span className='text-gray-700 font-medium'>Remove Background</span>
                 <label className='relative inline-flex items-center cursor-pointer text-gray-900 gap-3' >
-                  <input type="checkbox" className='sr-only peer' onChange={(e) => setRemoveBackground(prev => !prev)} checked={removeBackground} />
+                  <input type="checkbox" className='sr-only peer' onChange={() => setRemoveBackground(prev => !prev)} checked={removeBackground} />
                   <div className='w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-indigo-600 transition-all duration-200'></div>
                   <span className='dot absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-4'></span>
                 </label>
