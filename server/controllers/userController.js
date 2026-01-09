@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
+import Resume from "../models/Resume.js";
 
 
 const generateToken = (userId) => {
@@ -89,4 +90,19 @@ export const getUserbyId = async (req, res) => {
     return res.status(400).json({ message: "Internal Server Error in User Controller" })
   }
 
+}
+
+
+//get -- /api/users/resumes -- for getting user resumes
+
+export const getUserResumes = async (req, res) => {
+  try {
+    const userId = req.userId
+
+    //return user resumes 
+    const resumes = await Resume.find({ userId })
+    return res.status(200).json({ resumes })
+  } catch (error) {
+    return res.status(400).json({ message: "Internal Server Error in User Controller" })
+  }
 }
