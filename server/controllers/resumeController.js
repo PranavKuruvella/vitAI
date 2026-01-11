@@ -84,7 +84,7 @@ export const updateResume = async (req, res) => {
     const image = req.file //will be added by middleware
 
     //updating the resume
-    let resumeDataCopy = JSON.parse(resumeData);
+    let resumeDataCopy = JSON.parse(JSON.stringify(resumeData));
 
     if (image) {
 
