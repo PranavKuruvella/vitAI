@@ -1,6 +1,29 @@
 import React from "react";
-import { Sparkles } from "lucide-react";
+import { Loader, Sparkles } from "lucide-react";
+import { useSelector } from "react-redux";
+import { useState } from "react";
+import api from "../configs/api";
+import toast from "react-hot-toast";
 const ProfessionalSummary = ({ data, onChange }) => {
+
+
+  const { token } = useSelector((state) => state.auth);
+  const [isGeneration, setIsGeneration] = useState(false)
+
+  const generateSummary = async () => {
+    try {
+      setIsGeneration(true)
+      const prompt = `enhace my professional summary : "${data}"`
+      const response = await api.post("/api/ai/enhance-pro-sum", { userContent: prompt }, { headers: { Authorization: `${token}` } })
+      setResumeData(prev => ({ ...prev, professional_summary: response.data.enhancedContent }))
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to enhance summary")
+    }
+    finally {
+      setIsGeneration(false)
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -15,9 +38,9 @@ const ProfessionalSummary = ({ data, onChange }) => {
         </div>
 
         {/* AI enhance button */}
-        <button className="flex items-center gap-2 px-3 py-1 text-sm bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition-all">
-          <Sparkles className="size-4 " />
-          AI enhance
+        <button disabled={isGeneration} onClick={generateSummary} className="flex items-center gap-2 px-3 py-1 text-sm bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition-all">
+          {isGeneration ? <Loader className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
+          {isGeneration ? "Enhancing..." : "AI Enhance"}
         </button>
       </div>
 
