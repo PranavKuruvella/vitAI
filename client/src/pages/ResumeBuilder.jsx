@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
 import { dummyResumeData } from "../assets/assets";
 import { ArrowLeftIcon, Briefcase, ChevronLeft, ChevronRight, Download, Eye, EyeOff, FileText, FolderIcon, GraduationCap, Share, Share2Icon, Sparkles, User } from "lucide-react";
@@ -11,9 +12,12 @@ import ExperienceForm from "../components/ExperienceForm.jsx";
 import EducationForm from "../components/EducationForm.jsx";
 import ProjectForm from "../components/ProjectForm.jsx";
 import SkillForm from "../components/SkillForm.jsx";
+import { useSelector } from "react-redux";
+import api from "../configs/api.js";
 
 const ResumeBuilder = () => {
   const { resumeId } = useParams();
+  const { token } = useSelector((state) => state.auth);
 
   const [resumeData, setResumeData] = useState({ //resume details
     _id: "",
@@ -31,14 +35,18 @@ const ResumeBuilder = () => {
 
   useEffect(() => { //page load avvagane edhi chey
     const loadExistingResume = async () => { //db fetch to get the resume details if present
-      const resume = dummyResumeData.find((resume) => resume._id === resumeId);
-      if (resume) {
-        setResumeData(resume);
-        document.title = resume.title;
+      try {
+        const { data } = await api.get(`/api/resumes/get/${resumeId}`, { headers: { Authorization: `${token}` } });
+        if (data.resume) {
+          setResumeData(data.resume);
+          document.title = data.resume.title;
+        }
+      } catch (error) {
+        console.log(error.message);
       }
     };
     loadExistingResume();
-  }, [resumeId]);
+  }, []);
 
   const [activeSectionIndex, setActiveSectionIndex] = useState(0) //progress bar kosam
   const [remove, setRemove] = useState(false)
@@ -56,8 +64,21 @@ const ResumeBuilder = () => {
   const activeSection = sections[activeSectionIndex]
 
 
-  const changeResumeVisibility = () => { //toggle public/private
-    setResumeData(prev => ({ ...prev, public: !prev.public }))
+  const changeResumeVisibility = async () => { //toggle public/private
+    try {
+      const formData = new FormData();
+      formData.append("resumeId", resumeId);
+      formData.append("resumeData", JSON.stringify({ public: !resumeData.public }));
+
+      const { data } = await api.put(`/api/resumes/update`, formData, { headers: { Authorization: `${token}` } });
+
+      setResumeData({ ...resumeData, public: !resumeData.public });
+      toast.success(data.message);
+
+    } catch (error) {
+      console.log(`error saving in resume`)
+      toast.error("Internal Server Error")
+    }
   }
 
   const handleShare = () => {
@@ -77,6 +98,31 @@ const ResumeBuilder = () => {
 
   const downloadResume = () => {
     window.print();
+  }
+
+  const saveResume = async () => {
+    try {
+      let updatedResumeData = structuredClone(resumeData);
+
+      //remove the image from the resume data
+      if (typeof resumeData.personal_info.image === 'object') {
+        delete updatedResumeData.personal_info.image;
+      }
+
+      const formData = new FormData();
+      formData.append("resumeId", resumeId);
+      formData.append("resumeData", JSON.stringify(updatedResumeData));
+
+      remove && formData.append("removeBackground", "yes");
+      typeof resumeData.personal_info.image === 'object' && formData.append("image", resumeData.personal_info.image);
+
+      const { data } = await api.put(`/api/resumes/update`, formData, { headers: { Authorization: `${token}` } });
+      setResumeData(data.resume);
+      toast.success(data.message);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Internal Server Error");
+    }
   }
 
   return (
@@ -186,7 +232,7 @@ const ResumeBuilder = () => {
               </div>
 
               {/* save changes button */}
-              <button className="bg-linear-to-br from-indigo-100 to-indigo-200 ring-indigo-300 text-indigo-600 ring hover:ring-indigo-400 transition-all rounded-md px-6 py-2 mt-6 text-sm font-semibold">
+              <button onClick={() => { toast.promise(saveResume, { loading: 'Saving...' }) }} className="bg-linear-to-br from-indigo-100 to-indigo-200 ring-indigo-300 text-indigo-600 ring hover:ring-indigo-400 transition-all rounded-md px-6 py-2 mt-6 text-sm font-semibold">
                 Save Changes
               </button>
             </div>

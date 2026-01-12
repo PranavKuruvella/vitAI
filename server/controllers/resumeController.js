@@ -84,7 +84,12 @@ export const updateResume = async (req, res) => {
     const image = req.file //will be added by middleware
 
     //updating the resume
-    let resumeDataCopy = JSON.parse(JSON.stringify(resumeData));
+    let resumeDataCopy
+    if (typeof resumeData === 'string') {
+      resumeDataCopy = await JSON.parse(resumeData)
+    } else {
+      resumeDataCopy = structuredClone(resumeData)
+    }
 
     if (image) {
 
@@ -102,11 +107,15 @@ export const updateResume = async (req, res) => {
       resumeDataCopy.personal_info.image = response.url;
     }
 
+    delete resumeDataCopy._id;
+    delete resumeDataCopy.userId;
+
     const resume = await Resume.findOneAndUpdate({ userId, _id: resumeId }, resumeDataCopy, { new: true })
 
     //got the resume
     return res.status(200).json({ message: "Resume updated successfully!", resume })
   } catch (error) {
-    return res.status(400).json({ message: "Internal Server Error in Resume Controller" })
+    console.error(error);
+    return res.status(500).json({ message: error.message });
   }
 }
