@@ -4,6 +4,8 @@ import { dummyResumeData } from '../assets/assets.js'
 import ResumePreview from '../components/ResumePreview.jsx'
 import Loader from '../components/Loader.jsx'
 import { ArrowLeft } from 'lucide-react'
+import api from '../configs/api.js'
+import toast from 'react-hot-toast'
 
 const Preview = () => {
 
@@ -14,11 +16,15 @@ const Preview = () => {
   const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
     const loadResume = async () => {
-      const resume = dummyResumeData.find((resume) => resume._id === resumeId);
-      if (resume) {
-        setResumeData(resume);
+      try {
+        const { data } = await api.get(`/api/resumes/public/${resumeId}`)
+        setResumeData(data.resume)
+      } catch (error) {
+        console.log(error.message)
+        toast.error(error.message)
+      } finally {
+        setIsLoading(false)
       }
-      setIsLoading(false)
     }
     loadResume()
   }, [resumeId])
