@@ -28,7 +28,8 @@ export const enhanceProfessionalSummary = async (req, res) => {
 
     return res.status(200).json({ message: "Enhanced summary successfully", enhancedContent });
   } catch (error) {
-    return res.status(500).json({ message: "Internal Server Error in AI Controller" });
+    console.error("Error in enhanceProfessionalSummary:", error);
+    return res.status(500).json({ message: `Internal Server Error: ${error.message}` });
   }
 }
 
@@ -59,7 +60,8 @@ export const enhanceJobDescription = async (req, res) => {
 
     return res.status(200).json({ message: "Enhanced job description successfully", enhancedContent });
   } catch (error) {
-    return res.status(500).json({ message: "Internal Server Error in AI Controller" });
+    console.error("Error in enhanceJobDescription:", error);
+    return res.status(500).json({ message: `Internal Server Error: ${error.message}` });
   }
 }
 

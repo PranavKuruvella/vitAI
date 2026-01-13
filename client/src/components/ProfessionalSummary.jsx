@@ -15,7 +15,7 @@ const ProfessionalSummary = ({ data, onChange }) => {
       setIsGeneration(true)
       const prompt = `enhace my professional summary : "${data}"`
       const response = await api.post("/api/ai/enhance-pro-sum", { userContent: prompt }, { headers: { Authorization: `${token}` } })
-      setResumeData(prev => ({ ...prev, professional_summary: response.data.enhancedContent }))
+      onChange(response.data.enhancedContent)
     } catch (error) {
       toast.error(error?.response?.data?.message || "Failed to enhance summary")
     }

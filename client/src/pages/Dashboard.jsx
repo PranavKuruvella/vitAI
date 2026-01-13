@@ -74,7 +74,7 @@ const Dashboard = () => {
       setTitle('');
       setResume(null);
       setShowUploadResume(false);
-      navigate(`/app/builder/${data.resumeId}`);
+      navigate(`/app/builder/${data.resume}`);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to upload resume');
     }
