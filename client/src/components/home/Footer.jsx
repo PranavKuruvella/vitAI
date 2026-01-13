@@ -16,7 +16,7 @@ const Footer = () => {
       <footer className=" mt-40 flex flex-wrap justify-center lg:justify-between overflow-hidden gap-10 md:gap-20 py-16 px-6 md:px-16 lg:px-24 xl:px-32 text-[13px] text-gray-500 bg-linear-to-r from-white via-indigo-200/60 to-white">
         <div className="flex flex-wrap items-start gap-10 md:gap-[60px] xl:gap-[140px]">
           <a href="#">
-            <img src="/vitae.svg" alt="" className='h-11 w-auto' />
+            <img src="/vitai.svg" alt="" className='h-18 w-auto' />
           </a>
           <div>
             <p className="text-slate-800 font-semibold">Product</p>
@@ -77,7 +77,7 @@ const Footer = () => {
               </svg>
             </a>
           </div>
-          <p className="mt-3 text-center">© 2025 <a href="#">Vitae</a></p>
+          <p className="mt-3 text-center">© 2025 <a href="#">vitAI</a></p>
         </div>
       </footer>
     </>
